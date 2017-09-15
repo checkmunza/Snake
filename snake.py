@@ -36,6 +36,8 @@ class SnakeWindow(arcade.Window):
 
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.snake_sprite = SnakeSprite(self.world.snake)
+        self.heart_sprite = ModelSprite('images/heart.png',
+                                         model=self.world.heart)
         '''
         self.snake_sprite = ModelSprite('images/block.png',
                                         model=self.world.snake)
@@ -48,6 +50,7 @@ class SnakeWindow(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.snake_sprite.draw()
+        self.heart_sprite.draw()
 
     def on_key_press(self, key, key_modifiers):
         self.world.on_key_press(key, key_modifiers)
