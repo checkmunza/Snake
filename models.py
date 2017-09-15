@@ -23,6 +23,12 @@ class Snake:
         self.world = world
         self.x = x
         self.y = y
+
+        self.body = [(x,y),
+                     (x-Snake.BLOCK_SIZE, y),
+                     (x-2*Snake.BLOCK_SIZE, y)]
+        self.length = 3
+
         self.wait_time = 0
         self.direction = DIR_DOWN
  
@@ -37,7 +43,10 @@ class Snake:
         self.x += DIR_OFFSET[self.direction][0] * Snake.BLOCK_SIZE
         self.y += DIR_OFFSET[self.direction][1] * Snake.BLOCK_SIZE
         self.wait_time = 0
- 
+
+        self.body.insert(0, (self.x,self.y))
+        self.body.pop()
+
  
 class World:
     def __init__(self, width, height):
