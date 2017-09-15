@@ -29,11 +29,15 @@ class Snake:
                      (x-Snake.BLOCK_SIZE, y),
                      (x-2*Snake.BLOCK_SIZE, y)]
         self.length = 3
+        self.has_eaten = False
 
         self.wait_time = 0
         self.direction = DIR_DOWN
  
     def update(self, delta):
+
+        print("%d %d" % (self.body[0][0],self.body[0][1]))
+
         self.wait_time += delta
 
         if self.wait_time < Snake.MOVE_WAIT:
@@ -42,18 +46,25 @@ class Snake:
         #Check border
         if self.x > self.world.width:
             self.x = 0
+        elif self.x < 0:
+            self.x = self.world.width // 16 * 16
         if self.y > self.world.height:
             self.y = 0
+        elif self.y < 0:
+            self.y = self.world.height // 16 * 16
 
         self.x += DIR_OFFSET[self.direction][0] * Snake.BLOCK_SIZE
         self.y += DIR_OFFSET[self.direction][1] * Snake.BLOCK_SIZE
         self.wait_time = 0
 
         self.body.insert(0, (self.x,self.y))
-        self.body.pop()
+        if self.has_eaten:
+            self.has_eaten = False
+        else:
+            self.body.pop()
 
     def can_eat(self, heart):
-        if self.x == heart.x and self.y == heart.y:
+        if self.body[0][0] == heart.x and self.body[0][1] == heart.y:
             return True
         return False
 
@@ -64,8 +75,8 @@ class Heart:
         self.y = 0
  
     def random_position(self):
-        centerx = self.world.width // 2
-        centery = self.world.height // 2
+        centerx = self.world.width // 2 // 16 * 16 # FIX HEART POINT
+        centery = self.world.height // 2 // 16 * 16 # FIX HEART POINT
  
         self.x = centerx + randint(-15,15) * Snake.BLOCK_SIZE
         self.y = centerx + randint(-15,15) * Snake.BLOCK_SIZE
@@ -75,15 +86,18 @@ class World:
         self.width = width
         self.height = height
  
-        self.snake = Snake(self, width // 2, height // 2)
+        #FIX SNAKE POINT
+        self.snake = Snake(self, width // 2 // 16 * 16, height // 2 //16 * 16) 
         self.heart = Heart(self)
         self.heart.random_position()
  
     def update(self, delta):
         self.snake.update(delta)
+        print("HEART %d %d" % (self.heart.x, self.heart.y))
 
         if self.snake.can_eat(self.heart):
             self.heart.random_position()
+            self.snake.has_eaten = True
 
     def on_key_press(self, key, key_modifiers):
         self.snake.direction = KEY_OFFSET[key]
